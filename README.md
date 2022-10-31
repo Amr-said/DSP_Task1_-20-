@@ -14,10 +14,8 @@
 ### Preview
 
 
-#### Video
-
-Uploading Nyquist_Illustrator_studio · Streamlit - Personal - Microsoft​ Edge 2022-10-29 18-28-36.mp4…
-
+#### Animation
+![Uploading Animation.gif…]()
 ---
 ---
 ---
