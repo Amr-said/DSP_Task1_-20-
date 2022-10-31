@@ -2,8 +2,9 @@
 
 ## DSP*Task1*-20-
 
--Team Names:
--Hager
+# Team Names:
+
+-Hager Sherief
 -Mayar Fayez
 -Muhammed Sayed
 -Amr Kamal
