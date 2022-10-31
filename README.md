@@ -13,7 +13,11 @@
 
 ### Preview
 
----
+#### ANimation
+
+![](https://github.com/Amr-said/DSP_Task1_-20-/blob/main/Animation/Animation.gif)
+
+#### Screenshot
 
 <code><img src="https://github.com/Amr-said/DSP_Task1_-20-/blob/main/Screenshots/scr1.jpg"></code>
 
