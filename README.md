@@ -1,14 +1,5 @@
 # Nyquist Illuastrator
 
-## DSP*Task1*-20-
-
-# Team Names:
-
--Hager Sherief
--Mayar Fayez
--Muhammed Sayed
--Amr Kamal
-
 ### Features
 
 - Developing an illustrator for the signal recovery that shows Nyquist rate.
@@ -19,3 +10,14 @@
 - One graph to display the sinusoidal to be generated and display the sum of the generated sinusoidals.
 - A combobox to select one of the contributing sinusoidals and remove it via a delete button.
 - After making a synthetic signal then moving it to the main illustrator graph to start the sampling/recovery process.
+
+# Team Number:
+
+- Team 20
+
+# Team Names:
+
+- Hager Sherief
+- Mayar Fayez
+- Muhammed Sayed
+- Amr Kamal
