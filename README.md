@@ -13,11 +13,7 @@
 
 ### Preview
 
-[![Watch the video](https://github.com/Amr-said/DSP_Task1_-20-/blob/main/Videos/Nyquist_Illustrator_studio%20%C2%B7%20Streamlit%20-%20Personal%20-%20Microsoft%E2%80%8B%20Edge%202022-10-29%2018-28-36.mp4)
-
-<!-- <code><video src="https://github.com/Amr-said/DSP_Task1_-20-/blob/main/Videos/Nyquist_Illustrator_studio%20%C2%B7%20Streamlit%20-%20Personal%20-%20Microsoft%E2%80%8B%20Edge%202022-10-29%2018-28-36.mp4"></code> -->
-
-<!-- <p><img align="left" src="https://github.com/Amr-said/DSP_Task1_-20-/blob/main/Videos/Nyquist_Illustrator_studio%20%C2%B7%20Streamlit%20-%20Personal%20-%20Microsoft%E2%80%8B%20Edge%202022-10-29%2018-28-36.mp4" width="500" height="400"> -->
+---
 
 <code><img src="https://github.com/Amr-said/DSP_Task1_-20-/blob/main/Screenshots/scr1.jpg"></code>
 
@@ -51,9 +47,7 @@
 
 ---
 
-<code><img src="https://github.com/Amr-said/DSP_Task1_-20-/blob/main/Screenshots/scr5.jpg"></code>
-
----
+## <code><img src="https://github.com/Amr-said/DSP_Task1_-20-/blob/main/Screenshots/scr5.jpg"></code>
 
 ---
 
