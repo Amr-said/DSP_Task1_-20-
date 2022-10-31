@@ -60,7 +60,7 @@
 
 ---
 
-## <code><img src="https://github.com/Amr-said/DSP_Task1_-20-/blob/main/Screenshots/scr6.jpg"></code>
+## <code><img src="https://github.com/Amr-said/DSP_Task1_-20-/blob/main/Screenshots/Scr6.jpg"></code>
 
 ---
 
@@ -68,7 +68,7 @@
 
 ---
 
-## <code><img src="https://github.com/Amr-said/DSP_Task1_-20-/blob/main/Screenshots/scr7.jpg"></code>
+## <code><img src="https://github.com/Amr-said/DSP_Task1_-20-/blob/main/Screenshots/Scr%207.jpg"></code>
 
 ---
 
