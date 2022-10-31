@@ -4,7 +4,8 @@
 
 - Developing an illustrator for the signal recovery that shows Nyquist rate.
 - read csv signal and see the sampled points highlighted on top of the signal.
-- Change the sampling rate via a slider that range from 0 Hz to 10f max
+- Change the sampling rate via a slider
+- Adding noise to the signal
 - Reconstruct/recover the signal from the sampled points.
 - Web app has a Composer to generate basic signals to test and validate on the web.
 - One graph to display the sinusoidal to be generated and display the sum of the generated sinusoidals.
@@ -52,6 +53,22 @@
 ---
 
 ## <code><img src="https://github.com/Amr-said/DSP_Task1_-20-/blob/main/Screenshots/scr5.jpg"></code>
+
+---
+
+---
+
+---
+
+## <code><img src="https://github.com/Amr-said/DSP_Task1_-20-/blob/main/Screenshots/scr6.jpg"></code>
+
+---
+
+---
+
+---
+
+## <code><img src="https://github.com/Amr-said/DSP_Task1_-20-/blob/main/Screenshots/scr7.jpg"></code>
 
 ---
 
