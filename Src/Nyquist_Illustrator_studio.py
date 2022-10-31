@@ -1,16 +1,10 @@
-from pickle import TRUE
-from turtle import onclick, onkeyrelease, width
-from typing_extensions import Self
 import numpy as np
 import pandas as pd
-import matplotlib.pyplot as plt
 import plotly.express as pp
-from scipy.interpolate import interp1d
-from scipy import signal
 import scipy as sc
-import math
 import plotly.graph_objects as go
 import streamlit as st
+import math
 
 st.set_page_config(layout='wide')
 
@@ -80,9 +74,6 @@ st.markdown("""
 if 'freqsample' not in st.session_state:
     st.session_state['freqsample'] = 0
 
-if 'table' not in st.session_state:
-    st.session_state['table'] = []
-
 
 if 'fig_main' not in st.session_state:
     st.session_state['fig_main'] = go.Figure()
@@ -91,15 +82,37 @@ if 'fig_main' not in st.session_state:
 if 'fig_hidden' not in st.session_state:
     st.session_state['fig_hidden'] = go.Figure()
 
+if 'table' not in st.session_state:
+    st.session_state['table'] = []
+    st.session_state['table'].append([5, 4])
+
+if 'table2' not in st.session_state:
+    st.session_state['table2'] = []
+    st.session_state['table2'].append(4)
 
 if 'SNR' not in st.session_state:
-    st.session_state['SNR'] = 10000
+    st.session_state['SNR'] = 50
 
 if 'sampling_choice' not in st.session_state:
-    st.session_state['sampling_choice'] = 'Sampling frequency'
+    st.session_state['sampling_choice'] = 'Frequency'
+
+if 'add_noise' not in st.session_state:
+    st.session_state['add_noise'] = False
 
 
-def f_max(magnitude=[], time=[]):
+# returns maximun frequency using fourier fast tranasform:
+def f_max():
+
+    if (len(st.session_state['table2']) == 0):
+        f_maximum = 0
+    else:
+
+        f_maximum = max(st.session_state['table2'])
+
+    return f_maximum
+
+
+def f_max2(magnitude=[], time=[]):
     sample_period = time[1]-time[0]
     n_samples = len(time)
     fft_magnitudes = np.abs(np.fft.fft(magnitude))
@@ -108,33 +121,33 @@ def f_max(magnitude=[], time=[]):
     for i in range(len(fft_frequencies)):
         if fft_magnitudes[i] > 1:
             fft_clean_frequencies_array.append(fft_frequencies[i])
+
     f_maximum = max(fft_clean_frequencies_array)
     return f_maximum
 
 
 def nySample(time, amplitude, fs):
     if len(time) == len(amplitude):
-        points_per_indices = int((len(time) / time[-1]) / fs)
-        if points_per_indices == 0:
-            points_per_indices = 1
-        amplitude = amplitude[::points_per_indices]
-        time = time[::points_per_indices]
+        sampleperiod = int((len(time) / time[-1]) / fs)
+        if sampleperiod == 0:
+            sampleperiod = 1
+        amplitude = amplitude[::sampleperiod]
+        time = time[::sampleperiod]
         return time, amplitude
 
 
-def sinc_interpolation(input_magnitude, input_time, original_time):
+# returns reconstructed signal:
+def sinc_interpolation(samples, sample_time, original_time):
 
-    if len(input_magnitude) != len(input_time):
+    if len(samples) != len(sample_time):
         print('not same')
-
     # Find the period
-    if len(input_time) != 0:
-        T = input_time[1] - input_time[0]
-
+    if len(sample_time) != 0:
+        T = sample_time[1] - sample_time[0]
     # the equation
-    sincM = np.tile(original_time, (len(input_time), 1)) - \
-        np.tile(input_time[:, np.newaxis], (1, len(original_time)))
-    output_magnitude = np.dot(input_magnitude, np.sinc(sincM/T))
+    sincM = np.tile(original_time, (len(sample_time), 1)) - \
+        np.tile(sample_time[:, np.newaxis], (1, len(original_time)))
+    output_magnitude = np.dot(samples, np.sinc(sincM/T))
     return output_magnitude
 
 
@@ -143,28 +156,31 @@ def update_signal(magnitude, frequency):
         st.session_state['signal_drawn'][i] += magnitude * \
             np.sin(2*np.pi*frequency*st.session_state['time'][i])
 
+# adds noise compenent to originnal signal and plots it :
+
 
 def noise(snr):
 
-    SNR = 10.0**(snr/10.0)
-    p1 = st.session_state['signal_drawn'].var()
-    n = p1/SNR
-    noise = sc.sqrt(n)*sc.randn(len(st.session_state['signal_drawn']))
-    # signal after Noise
-    st.session_state['magnitude'] = st.session_state['signal_drawn']+noise
+    if st.session_state['add_noise']:
+        SNR = 10.0**(snr/10.0)
+        Psignal = st.session_state['signal_drawn'].var()
+        pnoise = Psignal/SNR
+        noise = sc.sqrt(pnoise)*sc.randn(len(st.session_state['signal_drawn']))
+        # signal after Noise
+        st.session_state['magnitude'] = st.session_state['signal_drawn']+noise
+
+    else:
+        st.session_state['magnitude'] = st.session_state['signal_drawn']
+
     st.session_state['fig_main'] = pp.line(
         x=st.session_state['time'], y=st.session_state['magnitude'])
 
 
-def convert_df(df):
-    return df.to_csv(index=False).encode('utf-8')
-
-
+# plots the sampled points and the reconstructed signal:
 def draw():
-    st.session_state['Fmax'] = f_max(
-        st.session_state['magnitude'],  st.session_state['time'])
+    st.session_state['Fmax'] = f_max()
 
-    if (st.session_state['sampling_choice'] != 'Sampling frequency'):
+    if (st.session_state['sampling_choice'] != 'Frequency' and len(st.session_state['table2']) != 0):
         Actual_frequency = st.session_state['freqsample'] * \
             st.session_state['Fmax']
     else:
@@ -173,16 +189,18 @@ def draw():
     sampleTime, sampleAmplitude = nySample(
         st.session_state['time'], st.session_state['magnitude'], Actual_frequency)
 
+    time_og = np.linspace(
+        st.session_state['time'][0],  st.session_state['time'][-1], 10000)
+
+    y = sinc_interpolation(sampleAmplitude, sampleTime, time_og)
+
     st.session_state['fig_main'].add_trace(go.Scatter(
         x=sampleTime, y=sampleAmplitude, mode='markers', visible=True, marker=dict(color="red"), name='Sample Points'))
-
-    time_og = np.linspace(time[0], time[-1], 2000)
-    y = sinc_interpolation(sampleAmplitude, sampleTime, time_og)
 
     st.session_state['fig_main'].add_trace(go.Scatter(
         x=time_og, y=y, mode='lines', marker=dict(color="black"), visible=True, name='Reconstructed'))
 
-    st.session_state['fig_main'].update_layout(xaxis_range=[-0.001, 1.001], yaxis_range=[(-1*max(max(st.session_state['magnitude']), max(y))-1), (max(max(st.session_state['magnitude']), max(y))+1)],
+    st.session_state['fig_main'].update_layout(xaxis_range=[-0.001, 10.001], yaxis_range=[(-1*max(max(st.session_state['magnitude']), max(y))-1), (max(max(st.session_state['magnitude']), max(y))+1)],
                                                xaxis_title="Time(seconds)", yaxis_title="Amplitude", font=dict(family='Arial', size=18))
 
     st.session_state['fig_hidden'] = pp.scatter(
@@ -191,8 +209,11 @@ def draw():
     st.session_state['fig_hidden'].add_trace(go.Scatter(
         x=time_og, y=y, mode='lines', marker=dict(color="black"), visible=True, name='Reconstructed'))
 
-    st.session_state['fig_hidden'].update_layout(xaxis_range=[-0.001, 1.001], yaxis_range=[(-1*max(max(st.session_state['magnitude']), max(y))-1), (max(max(st.session_state['magnitude']), max(y))+1)],
+    st.session_state['fig_hidden'].update_layout(xaxis_range=[-0.001, 10.001], yaxis_range=[(-1*max(max(st.session_state['magnitude']), max(y))-1), (max(max(st.session_state['magnitude']), max(y))+1)],
                                                  xaxis_title="Time(seconds)", yaxis_title="Amplitude", font=dict(family='Arial', size=18))
+
+    def convert_df(df):
+        return df.to_csv(index=False).encode('utf-8')
 
     df = pd.DataFrame({"x": time_og, "y": sinc_interpolation(
         sampleAmplitude, sampleTime, time_og)})
@@ -202,18 +223,25 @@ def draw():
 
 
 def change():
-    if 'time' not in st.session_state:
-        st.session_state['time'] = []
-
-    if 'signal_drawn' not in st.session_state:
-        st.session_state['signal_drawn'] = []
-
-    if 'magnitude' not in st.session_state:
-        st.session_state['magnitude'] = []
+    if 'Fmax2' not in st.session_state:
+        st.session_state['Fmax2'] = 0
     del st.session_state['time']
     del st.session_state['signal_drawn']
     del st.session_state['magnitude']
-    st.session_state['table'].clear()
+    del st.session_state['table']
+    del st.session_state['table2']
+    del st.session_state['Fmax2']
+
+    if "file" is not None:
+
+        if 'table' not in st.session_state:
+            st.session_state['table'] = []
+
+        if 'table2' not in st.session_state:
+            st.session_state['table2'] = []
+
+    # else:
+    #     st.experimental_rerun()
 
 
 st.title("Sampling Studio")
@@ -224,53 +252,62 @@ file = st.sidebar.file_uploader(
 hide = st.checkbox(label="Hide Original Signal", value=False)
 
 
-col1, col2 = st.sidebar.columns(2)
-added_magnitude = col1.number_input(label="Signal Magnitude:", step=1, value=0)
-added_frequency = col2.number_input(label="Signal Frequency:", step=1, value=0)
+frequuency, magnitude = st.sidebar.columns(2)
+added_magnitude = magnitude.number_input(
+    label="Signal Magnitude:", step=1, value=5)
+added_frequency = frequuency.number_input(
+    label="Signal Frequency:", min_value=0, step=1, value=4)
 
 add_btn = st.sidebar.button('Add')
 
-SNR = st.sidebar.slider(label="SNR", min_value=0,
-                        step=1, max_value=100, value=100)
+st.session_state['add_noise'] = st.sidebar.checkbox(label="Add Noise:")
+
+if (st.session_state['add_noise']):
+    st.session_state['SNR'] = st.sidebar.slider(label="SNR", min_value=0,
+                                                step=1, max_value=50, value=st.session_state['SNR'])
+
 
 undo_signals = st.sidebar.multiselect(
     "Remove signals", options=st.session_state['table'], label_visibility="hidden")
 
 remove_btn = st.sidebar.button('Remove')
 
-st.session_state['sampling_choice'] = st.sidebar.selectbox(
-    'Sample Using:', ('Sampling frequency', 'Factor*Fmax'))
-if (st.session_state['sampling_choice'] == 'Sampling frequency'):
-    st.session_state['freqsample'] = st.sidebar.slider(
-        label="Sampling frequency:", min_value=2, max_value=100, step=1, label_visibility="hidden")
+
+if (len(st.session_state['table2']) != 0):
+
+    st.session_state['sampling_choice'] = st.sidebar.selectbox(
+        'Sample Using:', ('Frequency', 'Normalized Frequency'))
+
+    if (st.session_state['sampling_choice'] == 'Frequency'):
+        st.session_state['freqsample'] = st.sidebar.slider(
+            label="Sampling frequency:", min_value=1, max_value=100, step=1, label_visibility="hidden")
+    else:
+        st.session_state['freqsample'] = st.sidebar.slider(
+            label="Factor*Fmax:", min_value=0.25, max_value=10.0, step=0.1, label_visibility="hidden")
+
+
 else:
     st.session_state['freqsample'] = st.sidebar.slider(
-        label="Factor*Fmax:", min_value=0.25, max_value=10.0, step=0.1, label_visibility="hidden")
+        label="Sampling frequency:", min_value=1, max_value=1000, step=1)
 
 
-def functions():
+if add_btn:
+    update_signal(added_magnitude, added_frequency)
+    st.session_state['table'].append([added_magnitude, added_frequency])
+    st.session_state['table2'].append(added_frequency)
+    st.experimental_rerun()
 
-    if add_btn:
-        update_signal(added_magnitude, added_frequency)
-        st.session_state['table'].append([added_magnitude, added_frequency])
-        st.experimental_rerun()
+if remove_btn:
+    for item in undo_signals:
+        update_signal(-1.0*item[0], item[1])
+        for item2 in st.session_state['table']:
+            if item == item2:
+                st.session_state['table'].remove(item2)
 
-    if remove_btn:
-        for item in undo_signals:
-            update_signal(-1.0*item[0], item[1])
-            for item2 in st.session_state['table']:
-                if item == item2:
-                    st.session_state['table'].remove(item2)
-        st.experimental_rerun()
-
-    noise(SNR)
-    draw()
-
-    if hide:
-        st.plotly_chart(
-            st.session_state['fig_hidden'], use_container_width=True)
-    else:
-        st.plotly_chart(st.session_state['fig_main'], use_container_width=True)
+        for item3 in st.session_state['table2']:
+            if item[1] == item3:
+                st.session_state['table2'].remove(item3)
+    st.experimental_rerun()
 
 
 if file is not None:
@@ -288,29 +325,41 @@ if file is not None:
     if 'magnitude' not in st.session_state:
         st.session_state['magnitude'] = magnitude
 
-    if 'Fmax' not in st.session_state:
-        st.session_state['Fmax'] = f_max(
-            st.session_state['magnitude'],  st.session_state['time'])
+    if 'Fmax2' not in st.session_state:
+        st.session_state['Fmax2'] = f_max2(
+            st.session_state['signal_drawn'], st.session_state['time'])
+        st.session_state['table2'].append(st.session_state['Fmax2'])
+        st.experimental_rerun()
 
-    functions()
 else:
-    File = pd.read_csv(
-        r'C:\Users\LAPTOP\OneDrive\المستندات\GitHub\DSP_Task1_-20-\Docs\signal3.csv')
-    csv_data = File.to_numpy()
-    time = csv_data[:, 0]
-    magnitude = csv_data[:, 1]
 
     if 'time' not in st.session_state:
-        st.session_state['time'] = time
-
-    if 'signal_drawn' not in st.session_state:
-        st.session_state['signal_drawn'] = magnitude
+        st.session_state['time'] = np.linspace(0, 10, 10000)
 
     if 'magnitude' not in st.session_state:
-        st.session_state['magnitude'] = magnitude
+        st.session_state['magnitude'] = []
 
     if 'Fmax' not in st.session_state:
-        st.session_state['Fmax'] = f_max(
-            st.session_state['magnitude'],  st.session_state['time'])
+        st.session_state['Fmax'] = f_max()
 
-    functions()
+    if 'signal_drawn' not in st.session_state:
+        st.session_state['signal_drawn'] = np.zeros(
+            len(st.session_state['time']))
+        if (len(st.session_state['table']) == 0):
+            st.session_state['table'].append([5, 4])
+
+        if (len(st.session_state['table2']) == 0):
+            st.session_state['table2'].append(4)
+        update_signal(5, 4)
+
+        st.experimental_rerun()
+
+noise(st.session_state['SNR'])
+
+draw()
+
+
+if hide:
+    st.plotly_chart(st.session_state['fig_hidden'], use_container_width=True)
+else:
+    st.plotly_chart(st.session_state['fig_main'], use_container_width=True)
