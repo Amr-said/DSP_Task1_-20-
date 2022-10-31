@@ -13,8 +13,15 @@
 
 ### Preview
 
----
 
+#### Video
+
+Uploading Nyquist_Illustrator_studio · Streamlit - Personal - Microsoft​ Edge 2022-10-29 18-28-36.mp4…
+
+---
+---
+---
+#### Screenshots
 <code><img src="https://github.com/Amr-said/DSP_Task1_-20-/blob/main/Screenshots/scr1.jpg"></code>
 
 ---
