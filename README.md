@@ -13,10 +13,6 @@
 
 ### Preview
 
-#### Video
-
-![](https://github.com/Amr-said/DSP_Task1_-20-/blob/main/Videos/Nyquist_Illustrator_studio%20%C2%B7%20Streamlit%20-%20Personal%20-%20Microsoft%E2%80%8B%20Edge%202022-10-29%2018-28-36.mp4)
-
 #### Animation
 
 ![](https://github.com/Amr-said/DSP_Task1_-20-/blob/main/Animation/Animation.gif)
@@ -60,6 +56,14 @@
 ---
 
 ---
+
+---
+
+## Tools:
+
+- Streamlit
+- Python libraries: Numpy, Scipy, Pandas
+- Plotly
 
 ## Team Number:
 
