@@ -11,11 +11,15 @@
 - A combobox to select one of the contributing sinusoidals and remove it via a delete button.
 - After making a synthetic signal then moving it to the main illustrator graph to start the sampling/recovery process.
 
-# Team Number:
+### preview
+
+<code><video src="https://github.com/Amr-said/DSP_Task1_-20-/blob/main/Videos/Nyquist_Illustrator_studio%20%C2%B7%20Streamlit%20-%20Personal%20-%20Microsoft%E2%80%8B%20Edge%202022-10-29%2018-28-36.mp4"></code>
+
+## Team Number:
 
 - Team 20
 
-# Team Names:
+## Team Members:
 
 - Hager Sherief
 - Mayar Fayez
